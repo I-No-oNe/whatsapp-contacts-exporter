@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WhatsApp Group Exporter</title>
+<link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <img class="logo" src="icons/icon128.png" alt="" />
+      <div>
+        <h1>Group Exporter</h1>
+        <p id="status"><span class="pulse"></span>Connecting to WhatsApp...</p>
+      </div>
+    </div>
+    <div class="count"><span id="statCount">0</span><small>participants</small></div>
+  </header>
+
+  <div class="progress-wrap"><div id="progress" class="progress"></div></div>
+
+  <div id="banner" class="banner" role="status" aria-live="polite" hidden></div>
+
+  <div class="toolbar">
+    <span class="lbl" id="comboLbl">Group</span>
+    <div class="combo" id="combo">
+      <button id="comboBtn" class="combo-btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="comboLbl comboLabel" disabled>
+        <span id="comboLabel" class="combo-label">Loading groups...</span>
+        <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 6 7.5 9 4.5"/></svg>
+      </button>
+      <div id="comboPanel" class="combo-panel" hidden>
+        <input id="comboSearch" type="search" placeholder="Search groups" autocomplete="off" spellcheck="false"
+               role="combobox" aria-expanded="true" aria-controls="comboList" aria-autocomplete="list" />
+        <ul id="comboList" role="listbox" aria-labelledby="comboLbl"></ul>
+        <div id="comboEmpty" class="combo-empty" hidden>No groups match</div>
+      </div>
+    </div>
+    <button id="retry" class="btn ghost" hidden>Retry connection</button>
+  </div>
+
+  <div class="toolbar">
+    <input id="filter" type="search" placeholder="Filter by name or number" autocomplete="off" />
+  </div>
+
+  <ul id="list"></ul>
+  <div id="empty">Choose a group to see its participants.</div>
+  <p id="summary" class="summary" hidden></p>
+
+  <footer class="exports">
+    <button id="xlsx" class="btn primary" disabled>Export to Excel</button>
+    <button id="csv" class="btn ghost" disabled>CSV</button>
+    <button id="copy" class="btn ghost" disabled>Copy</button>
+  </footer>
+  <p class="lib-info"><span id="libInfo" hidden></span> <button id="debug" class="link">Copy debug report</button></p>
+
+  <script src="xlsx.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

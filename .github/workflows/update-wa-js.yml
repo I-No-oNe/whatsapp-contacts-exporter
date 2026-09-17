@@ -1,0 +1,52 @@
+# Pull new @wppconnect/wa-js releases into lib/ and publish an extension release.
+name: Update wa-js
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for new wa-js
+        id: check
+        run: |
+          latest=$(npm view @wppconnect/wa-js version)
+          current=$(cat lib/WA_JS_VERSION)
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          if [ "$latest" != "$current" ]; then echo "update=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Pull library and bump version
+        if: steps.check.outputs.update == 'true'
+        id: bump
+        run: |
+          npm pack "@wppconnect/wa-js@${{ steps.check.outputs.latest }}"
+          tar xzf wppconnect-wa-js-*.tgz
+          cp package/dist/wppconnect-wa.js package/dist/wppconnect-wa.js.LICENSE.txt lib/
+          echo "${{ steps.check.outputs.latest }}" > lib/WA_JS_VERSION
+          rm -rf package wppconnect-wa-js-*.tgz
+          version=$(jq -r .version manifest.json | awk -F. '{print $1"."$2"."$3+1}')
+          jq --arg v "$version" '.version = $v' manifest.json > m.tmp && mv m.tmp manifest.json
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and release
+        if: steps.check.outputs.update == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=${{ steps.bump.outputs.version }}
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Update wa-js to ${{ steps.check.outputs.latest }}"
+          git tag "v$v"
+          git push origin HEAD "v$v"
+          git archive --format=zip -o "whatsapp-group-exporter-v$v.zip" HEAD
+          gh release create "v$v" "whatsapp-group-exporter-v$v.zip" --title "v$v" \
+            --notes "Updates the WhatsApp library (@wppconnect/wa-js) to ${{ steps.check.outputs.latest }} for the latest WhatsApp Web. Download the zip and reload the extension."
