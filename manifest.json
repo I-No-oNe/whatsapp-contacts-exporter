@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "WhatsApp Group Exporter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Pick a WhatsApp Web group and export its participants (number + WhatsApp name) to Excel.",
   "permissions": [
     "activeTab",
