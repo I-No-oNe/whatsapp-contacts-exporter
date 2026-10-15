@@ -121,4 +121,4 @@
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
-/*! wppconnect-team/wa-js v4.6.1 */
+/*! wppconnect-team/wa-js v4.7.0 */
